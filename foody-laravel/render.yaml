@@ -1,0 +1,53 @@
+services:
+  - type: web
+    name: foody-api
+    runtime: php
+    region: ohio
+    plan: free
+    buildCommand: composer install --no-dev
+    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_KEY
+        sync: false
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromService:
+          type: pgsql
+          name: foody-db
+          property: host
+      - key: DB_DATABASE
+        fromService:
+          type: pgsql
+          name: foody-db
+          property: database
+      - key: DB_USERNAME
+        fromService:
+          type: pgsql
+          name: foody-db
+          property: user
+      - key: DB_PASSWORD
+        fromService:
+          type: pgsql
+          name: foody-db
+          property: password
+      - key: DB_PORT
+        value: "5432"
+      - key: APP_URL
+        value: https://foody-api.onrender.com
+      - key: FRONTEND_URL
+        sync: false
+      - key: SANCTUM_STATEFUL_DOMAINS
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+
+databases:
+  - name: foody-db
+    type: pgsql
+    plan: free
+    region: ohio

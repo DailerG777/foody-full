@@ -1,0 +1,12 @@
+.env
+.env.backup
+.env.production
+node_modules/
+vendor/
+storage/*.key
+public/storage
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
