@@ -47,7 +47,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('pagos/{ref}/estado',      [WompiController::class,'consultarEstado']);
     Route::post('pagos/subir-comprobante',[WompiController::class,'subirComprobante']);
 
-    // Repartidor GPS
+    // Repartidor
+    Route::get('repartidor/pedidos-disponibles', [RepartidorController::class,'pedidosDisponibles']);
+    Route::post('repartidor/pedidos/{pedido}/tomar', [RepartidorController::class,'tomarPedido']);
+    Route::put('repartidor/ubicacion', [RepartidorController::class,'actualizarUbicacion']);
+    Route::get('repartidor/estadisticas', [RepartidorController::class,'estadisticas']);
+    Route::put('repartidor/disponibilidad', [RepartidorController::class,'toggleDisponibilidad']);
     Route::get('pedidos/{pedidoId}/repartidor-ubicacion', [RepartidorController::class,'obtenerUbicacionPorPedido']);
 
     // Reseñas
