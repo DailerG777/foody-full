@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -32,9 +33,9 @@ class AuthController extends Controller {
             'nombre'=>$data['nombre'],'apellido'=>$data['apellido'],
             'email'=>$data['email'],'telefono'=>$data['telefono']??null,
             'password'=>Hash::make($data['password']),
-            'email_verified_at'=>now(),
         ], $extra));
-        return response()->json(['message'=>'Cuenta creada.','user'=>$this->resource($user)],201);
+        event(new Registered($user));
+        return response()->json(['message'=>'Cuenta creada. Verifica tu correo.','user'=>$this->resource($user)],201);
     }
 
     public function login(Request $request): JsonResponse {
