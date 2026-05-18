@@ -8,7 +8,7 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail {
     use HasApiTokens, HasFactory, Notifiable;
-    protected $fillable = ['nombre','apellido','email','telefono','cedula','tipo_vehiculo','placa','foto_cedula','foto_cara','password','role','plan','estado_verificacion','foto','activo'];
+    protected $fillable = ['nombre','apellido','email','telefono','cedula','tipo_vehiculo','placa','foto_cedula','foto_cara','password','role','plan','estado_verificacion','foto','activo','email_verified_at'];
     protected $hidden   = ['password','remember_token'];
     protected $casts    = ['email_verified_at'=>'datetime','password'=>'hashed','activo'=>'boolean'];
 
