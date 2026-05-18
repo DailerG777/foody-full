@@ -14,6 +14,10 @@ class Restaurante extends Model {
         if (!$this->foto_portada) return null;
         if (str_starts_with($this->foto_portada, 'http')) return $this->foto_portada;
         $path = ltrim($this->foto_portada, '/');
+        $relPath = str_starts_with($path, 'storage/') ? substr($path, 8) : $path;
+        if (file_exists(public_path('images/'.$relPath))) {
+            return asset('images/'.$relPath);
+        }
         $path = str_starts_with($path, 'storage/') ? $path : 'storage/'.$path;
         return asset($path);
     }
@@ -21,6 +25,10 @@ class Restaurante extends Model {
         if (!$this->logo) return null;
         if (str_starts_with($this->logo, 'http')) return $this->logo;
         $path = ltrim($this->logo, '/');
+        $relPath = str_starts_with($path, 'storage/') ? substr($path, 8) : $path;
+        if (file_exists(public_path('images/'.$relPath))) {
+            return asset('images/'.$relPath);
+        }
         $path = str_starts_with($path, 'storage/') ? $path : 'storage/'.$path;
         return asset($path);
     }
@@ -28,6 +36,10 @@ class Restaurante extends Model {
         if (!$this->menu_pdf) return null;
         if (str_starts_with($this->menu_pdf, 'http')) return $this->menu_pdf;
         $path = ltrim($this->menu_pdf, '/');
+        $relPath = str_starts_with($path, 'storage/') ? substr($path, 8) : $path;
+        if (file_exists(public_path('images/'.$relPath))) {
+            return asset('images/'.$relPath);
+        }
         $path = str_starts_with($path, 'storage/') ? $path : 'storage/'.$path;
         return asset($path);
     }
@@ -59,6 +71,10 @@ class Producto extends Model {
         if (!$this->foto) return null;
         if (str_starts_with($this->foto, 'http')) return $this->foto;
         $path = ltrim($this->foto, '/');
+        $relPath = str_starts_with($path, 'storage/') ? substr($path, 8) : $path;
+        if (file_exists(public_path('images/'.$relPath))) {
+            return asset('images/'.$relPath);
+        }
         $path = str_starts_with($path, 'storage/') ? $path : 'storage/'.$path;
         return asset($path);
     }
