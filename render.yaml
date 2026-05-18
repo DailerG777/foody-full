@@ -1,12 +1,11 @@
 services:
-  - type: web
+  - type: web_service
     name: foody-api
-    runtime: php
+    runtime: docker
     region: ohio
     plan: free
     rootDir: foody-laravel
-    buildCommand: composer install --no-dev
-    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    dockerfilePath: Dockerfile
     envVars:
       - key: APP_ENV
         value: production
@@ -17,22 +16,20 @@ services:
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
-        sync: false
+        value: dpg-d85o3uli849s738482sg-a.ohio-postgres.render.com
       - key: DB_DATABASE
-        sync: false
+        value: foody_db_xhgw
       - key: DB_USERNAME
-        sync: false
+        value: foody_db_xhgw_user
       - key: DB_PASSWORD
-        sync: false
+        value: kptR2Q3qAciddexM1qoH4K3iOElLZaHy
       - key: DB_PORT
         value: "5432"
-      - key: APP_URL
-        value: https://foody-api.onrender.com
       - key: FRONTEND_URL
         value: https://foody-full.vercel.app
       - key: SANCTUM_STATEFUL_DOMAINS
         value: foody-full.vercel.app
       - key: LOG_CHANNEL
         value: stderr
-
-# Database created manually: foody-db (PostgreSQL Free)
+      - key: APP_URL
+        value: https://foody-api.onrender.com
