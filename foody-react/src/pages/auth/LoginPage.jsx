@@ -25,7 +25,7 @@ export default function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-logo-block">
-        <img src="/assets/logo-foody.png" alt="Foody" className="brand-logo-auth"/>
+        <span className="brand-name" style={{fontSize:'2rem'}}>FOODY</span>
         <small>Ocaña Delivery</small>
       </div>
       <div className="auth-card">
