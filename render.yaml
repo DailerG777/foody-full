@@ -2,8 +2,9 @@ services:
   - type: web
     name: foody-api
     runtime: php
-    region: ohio
+    region: oregon
     plan: free
+    rootDir: foody-laravel
     buildCommand: composer install --no-dev
     startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
     envVars:
