@@ -2,7 +2,7 @@ services:
   - type: web
     name: foody-api
     runtime: php
-    region: oregon
+    region: ohio
     plan: free
     rootDir: foody-laravel
     buildCommand: composer install --no-dev
@@ -13,7 +13,7 @@ services:
       - key: APP_DEBUG
         value: false
       - key: APP_KEY
-        sync: false
+        value: base64:h52pKGTS0UsyWDjDgS6jQF1TGLCcWVrn1oqxt4AUVrI=
       - key: DB_CONNECTION
         value: pgsql
       - key: DB_HOST
@@ -41,9 +41,9 @@ services:
       - key: APP_URL
         value: https://foody-api.onrender.com
       - key: FRONTEND_URL
-        sync: false
+        value: https://foody-full.vercel.app
       - key: SANCTUM_STATEFUL_DOMAINS
-        sync: false
+        value: foody-full.vercel.app
       - key: LOG_CHANNEL
         value: stderr
 
