@@ -18,9 +18,9 @@ export default function DashboardPage() {
       restaurantesAPI.stats(),
       restaurantesAPI.pedidos(),
     ]).then(([r, s, p]) => {
-      setRestaurante(r.data);
+      setRestaurante(r.data?.restaurante || r.data);
       setStats(s.data);
-      setPedidos(p.data?.pedidos || p.data || []);
+      setPedidos(p.data?.data || p.data?.pedidos || p.data || []);
     }).catch(() => {}).finally(() => setLoading(false));
   };
 
