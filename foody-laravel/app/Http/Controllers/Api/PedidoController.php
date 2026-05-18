@@ -18,7 +18,7 @@ class PedidoController extends Controller {
             'items'=>['required','array','min:1'],
             'items.*.producto_id'=>['required','exists:productos,id'],
             'items.*.cantidad'=>['required','integer','min:1','max:20'],
-            'metodo_pago'=>['required','in:efectivo,nequi,daviplata,tarjeta'],
+            'metodo_pago'=>['required','in:efectivo,nequi,nequi_manual,daviplata,daviplata_manual,tarjeta,tarjeta_wompi'],
             'nota'=>['nullable','string','max:300'],
             'codigo_cupon'=>['nullable','string','max:30'],
         ]);

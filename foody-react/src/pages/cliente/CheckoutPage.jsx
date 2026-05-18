@@ -6,6 +6,7 @@ import { useCartStore } from '../../hooks/useCart';
 import toast from 'react-hot-toast';
 
 const DELIVERY_FEE = 3500;
+const METODO_MAP = { efectivo:'efectivo', nequi_manual:'nequi', daviplata_manual:'daviplata', tarjeta_wompi:'tarjeta' };
 const METODOS = [
   { id:'efectivo', label:'Efectivo', icon:'💵', desc:'Pagas al recibir' },
   { id:'nequi_manual', label:'Nequi', icon:'📱', desc:'Transferencia manual' },
@@ -63,7 +64,7 @@ export default function CheckoutPage() {
         restaurante_id: cart.restaurante?.id,
         direccion_texto: direccion,
         items: cart.toApiPayload(),
-        metodo_pago: metodo,
+        metodo_pago: METODO_MAP[metodo],
         nota: nota || undefined,
         codigo_cupon: cupon || undefined,
       });

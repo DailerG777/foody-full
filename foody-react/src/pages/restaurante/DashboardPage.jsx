@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { restaurantesAPI, pedidosAPI } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
+import toast from 'react-hot-toast';
 
 export default function DashboardPage() {
   const { logout } = useAuth();
@@ -20,12 +21,17 @@ export default function DashboardPage() {
       setRestaurante(r.data);
       setStats(s.data);
       setPedidos(p.data?.pedidos || p.data || []);
-    }).catch(() => {});
+    }).catch(() => {}).finally(() => setLoading(false));
+  };
+
+  const cambiarEstado = (pedidoId, estado) => {
+    pedidosAPI.actualizarEstado(pedidoId, estado)
+      .then(() => { toast.success(`Pedido ${estado}`); cargar(); })
+      .catch(err => toast.error(err.response?.data?.message || 'Error'));
   };
 
   useEffect(() => {
     cargar();
-    setLoading(false);
     const iv = setInterval(cargar, 15000);
     return () => clearInterval(iv);
   }, []);
@@ -79,11 +85,26 @@ export default function DashboardPage() {
             <Link to="/restaurante/pedidos" className="btn-sm">Ver todos</Link>
           </div>
           <div className="pedidos-mini-list">
-            {pedidosHoy.slice(0, 5).map(p => (
+            {pedidosHoy.slice(0, 10).map(p => (
               <div key={p.id} className="pedido-mini-item">
-                <span className={`estado-badge estado-${p.estado}`}>{p.estado}</span>
-                <span>#{p.referencia}</span>
-                <span>${p.total?.toLocaleString()}</span>
+                <div className="pedido-mini-info">
+                  <span className={`estado-badge estado-${p.estado}`}>{p.estado}</span>
+                  <span style={{fontWeight:600}}>#{p.referencia}</span>
+                  <span style={{color:'#888'}}>${p.total?.toLocaleString()}</span>
+                  <small style={{color:'#666'}}>{p.user?.nombre}</small>
+                </div>
+                {p.estado === 'pendiente' && (
+                  <div className="pedido-mini-acciones">
+                    <button className="btn-sm" style={{background:'#22c55e',color:'#fff',border:'none',borderRadius:'6px',padding:'4px 10px',cursor:'pointer',fontSize:'.75rem'}} onClick={()=>cambiarEstado(p.id,'aceptado')}>Aceptar</button>
+                    <button className="btn-sm" style={{background:'#ef4444',color:'#fff',border:'none',borderRadius:'6px',padding:'4px 10px',cursor:'pointer',fontSize:'.75rem'}} onClick={()=>cambiarEstado(p.id,'cancelado')}>Cancelar</button>
+                  </div>
+                )}
+                {p.estado === 'aceptado' && (
+                  <button className="btn-sm" style={{background:'#f59e0b',color:'#fff',border:'none',borderRadius:'6px',padding:'4px 10px',cursor:'pointer',fontSize:'.75rem'}} onClick={()=>cambiarEstado(p.id,'preparando')}>Preparar</button>
+                )}
+                {p.estado === 'preparando' && (
+                  <button className="btn-sm" style={{background:'#3b82f6',color:'#fff',border:'none',borderRadius:'6px',padding:'4px 10px',cursor:'pointer',fontSize:'.75rem'}} onClick={()=>cambiarEstado(p.id,'listo')}>Marcar listo</button>
+                )}
               </div>
             ))}
             {pedidosHoy.length === 0 && <p className="empty-state">Sin pedidos hoy</p>}
