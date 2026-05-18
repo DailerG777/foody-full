@@ -82,17 +82,23 @@ class DatabaseSeeder extends Seeder {
         $paleta = ['40E0D0','FF6B6B','4ECDC4','FFD93D','6BCB77','4D96FF','C9B1FF','FF8C42','E84855','2D936C','FFC857','6A4C93','FF6B35','00B4D8','F72585'];
         $pedidoRef = 1;
         $imagenes = [
-            'la-mansion'=>'restaurantes/la-mansion.jpeg',
-            'la-provincia'=>'restaurantes/la-provincia.jpeg',
-            'amaretto'=>'restaurantes/amaretto.jpeg',
-            'tributo'=>'restaurantes/tributo.jpeg',
-            'nigiri-sushi'=>'restaurantes/nigiri.jpeg',
+            'la-mansion'=>'restaurantes/la-mansion.jpeg','la-provincia'=>'restaurantes/la-provincia.jpeg',
+            'amaretto'=>'restaurantes/amaretto.jpeg','tributo'=>'restaurantes/tributo.jpeg',
+            'monos-fusion'=>'restaurantes/monos-fusion.jpeg','areperia-ocanerita'=>'restaurantes/areperia-ocanerita.jpeg',
+            'restaurante-boyaca'=>'restaurantes/restaurante-boyaca.jpeg','restaurante-leo'=>'restaurantes/restaurante-leo.jpeg',
+            'nigiri-sushi'=>'restaurantes/nigiri.jpeg','la-convencion-1828'=>'restaurantes/la-convencion-1828.jpeg',
+            'cuestarica'=>'restaurantes/cuestarica.jpeg','el-burro-burger'=>'restaurantes/el-burro-burger.jpeg',
+            'the-social'=>'restaurantes/the-social.jpeg','wicho-wings'=>'restaurantes/wicho-wings.jpeg',
+            'vacanos'=>'restaurantes/vacanos.jpeg','pascual-food'=>'restaurantes/pascual-food.jpeg',
+            'casona-don-alfredo'=>'restaurantes/casona-don-alfredo.jpeg','el-dicho-broaster'=>'restaurantes/el-dicho-broaster.jpeg',
+            'pizzeria-sapienza'=>'restaurantes/pizzeria-sapienza.jpeg','mattia'=>'restaurantes/mattia.jpeg',
+            'haoma-cafe'=>'restaurantes/haoma-cafe.jpeg','el-tinto-terraza'=>'restaurantes/el-tinto-terraza.jpeg',
+            'the-beer-house'=>'restaurantes/the-beer-house.jpeg','el-carajo'=>'restaurantes/el-carajo.jpeg',
+            'calabongas'=>'restaurantes/calabongas.jpeg','don-juan'=>'restaurantes/don-juan.jpeg',
         ];
         $menus = [
-            'la-mansion'=>'menus/la-mansion.pdf',
-            'la-provincia'=>'menus/la-provincia.pdf',
-            'amaretto'=>'menus/amaretto.pdf',
-            'tributo'=>'menus/tributo.pdf',
+            'la-mansion'=>'menus/la-mansion.pdf','la-provincia'=>'menus/la-provincia.pdf',
+            'amaretto'=>'menus/amaretto.pdf','tributo'=>'menus/tributo.pdf',
             'nigiri-sushi'=>'menus/nigiri.pdf',
         ];
         foreach ($restaurants as $rIdx => $r) {
