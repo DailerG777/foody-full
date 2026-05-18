@@ -32,4 +32,12 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: APP_URL
-        value: https://foody-api.onrender.com
+        value: https://foody-api-7mag.onrender.com
+      - key: MAIL_MAILER
+        value: resend
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        value: noreply@foody.app
+      - key: MAIL_FROM_NAME
+        value: Foody Ocaña
