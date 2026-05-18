@@ -11,7 +11,7 @@ export default function DashboardPage() {
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const cargar = () => {
     Promise.all([
       restaurantesAPI.miPanel(),
       restaurantesAPI.stats(),
@@ -20,7 +20,14 @@ export default function DashboardPage() {
       setRestaurante(r.data);
       setStats(s.data);
       setPedidos(p.data?.pedidos || p.data || []);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch(() => {});
+  };
+
+  useEffect(() => {
+    cargar();
+    setLoading(false);
+    const iv = setInterval(cargar, 15000);
+    return () => clearInterval(iv);
   }, []);
 
   if (loading) return <div className="loading-screen">Cargando panel...</div>;
