@@ -45,7 +45,7 @@ export default function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-logo-block">
-        <span className="brand-name" style={{fontSize:'2rem'}}>FOODY</span>
+        <img src="/assets/logo-foody.png" alt="Foody" className="brand-logo-auth"/>
       </div>
       <div className="auth-card">
         <h2>Crear cuenta</h2>

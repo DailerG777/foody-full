@@ -19,7 +19,7 @@ export default function MapaPage() {
     <div className="app-layout">
       <header className="app-header">
         <div className="brand">
-          <span className="brand-name">FOODY</span>
+          <img src="/assets/logo-foody.png" alt="Foody" className="brand-logo"/>
         </div>
         <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
           <button className="btn-ghost btn-sm" onClick={() => navigate('/')}>← Lista</button>

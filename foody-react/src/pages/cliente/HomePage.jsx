@@ -55,7 +55,7 @@ export default function HomePage() {
     <div className="app-layout">
       <header className="app-header">
         <div className="brand">
-          <span className="brand-name">FOODY</span>
+          <img src="/assets/logo-foody.png" alt="Foody" className="brand-logo"/>
         </div>
         <div className="search-bar">
           <span>🔍</span>
