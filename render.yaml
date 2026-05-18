@@ -49,6 +49,6 @@ services:
 
 databases:
   - name: foody-db
-    type: pgsql
+    type: postgres
     plan: free
     region: ohio
