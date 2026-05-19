@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { pedidosAPI, pagosAPI } from '../../api/client';
 import { useCartStore } from '../../hooks/useCart';
@@ -44,7 +44,7 @@ export default function CheckoutPage() {
 
   const esManual = metodo === 'nequi_manual' || metodo === 'daviplata_manual';
 
-  useEffect(() => { if (cart.items.length===0 && !pedidoOk) navigate('/'); }, [cart.items]);
+  if (cart.items.length===0 && !pedidoOk) return <Navigate to="/" replace />;
 
   const subtotal  = cart.totalPrice();
   const domicilio = domicilioGratis ? 0 : DELIVERY_FEE;
