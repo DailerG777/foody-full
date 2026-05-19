@@ -18,10 +18,7 @@ const CUPONES_DEMO = {
   'BIENVENIDO': { tipo:'fijo', valor:5000, label:'$5.000 de descuento' },
   'GRATIS':     { tipo:'delivery', label:'Domicilio gratis' },
 };
-const DATOS_PAGO = {
-  nequi_manual:    { numero: '300 123 4567', titular: 'Foody Ocaña' },
-  daviplata_manual:{ numero: '310 987 6543', titular: 'Foody Ocaña' },
-};
+const DATOS_PAGO = {}; // se obtiene del restaurante en el carrito
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -43,6 +40,7 @@ export default function CheckoutPage() {
   const [subiendoComp, setSubiendoComp] = useState(false);
 
   const esManual = metodo === 'nequi_manual' || metodo === 'daviplata_manual';
+  const datosPago = esManual ? { numero: cart.restaurante?.[metodo === 'nequi_manual' ? 'nequi' : 'daviplata'], titular: cart.restaurante?.nombre } : {};
 
   if (cart.items.length===0 && !pedidoOk) return <Navigate to="/" replace />;
 
@@ -199,12 +197,12 @@ export default function CheckoutPage() {
             {esManual && (
               <div style={{background:'#161616',border:'1px solid #2a2a2a',borderRadius:'12px',padding:'14px',margin:'12px 0'}}>
                 <p style={{fontWeight:700,fontSize:'.85rem',marginBottom:'8px'}}>📲 Datos para transferencia</p>
-                <p style={{fontSize:'.82rem',color:'#888'}}>
-                  {metodo === 'nequi_manual' ? 'Nequi' : 'Daviplata'}: <strong style={{color:'#D21E0F'}}>{DATOS_PAGO[metodo]?.numero}</strong>
-                </p>
-                <p style={{fontSize:'.82rem',color:'#888',marginTop:'4px'}}>
-                  Titular: <strong>{DATOS_PAGO[metodo]?.titular}</strong>
-                </p>
+                  <p style={{fontSize:'.82rem',color:'#888'}}>
+                    {metodo === 'nequi_manual' ? 'Nequi' : 'Daviplata'}: <strong style={{color:'#D21E0F'}}>{datosPago.numero || 'No configurado'}</strong>
+                  </p>
+                  <p style={{fontSize:'.82rem',color:'#888',marginTop:'4px'}}>
+                    Titular: <strong>{datosPago.titular || '-'}</strong>
+                  </p>
                 <p style={{fontSize:'.78rem',color:'#888',marginTop:'8px',borderTop:'1px solid #2a2a2a',paddingTop:'8px'}}>
                   Valor a transferir: <strong style={{color:'#D21E0F'}}>{fmt(total)}</strong>
                 </p>

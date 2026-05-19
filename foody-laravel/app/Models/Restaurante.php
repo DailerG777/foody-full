@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 class Restaurante extends Model {
     use HasFactory;
-    protected $fillable=['user_id','nombre','slug','descripcion','categoria','telefono','whatsapp','direccion','lat','lng','foto_portada','logo','menu_pdf','tiempo_min','tiempo_max','pedido_minimo','radio_km','envio_gratis','envio_gratis_desde','abierto','activo','rating','total_resenas','plan'];
+    protected $fillable=['user_id','nombre','slug','descripcion','categoria','telefono','whatsapp','nequi','daviplata','direccion','lat','lng','foto_portada','logo','menu_pdf','tiempo_min','tiempo_max','pedido_minimo','radio_km','envio_gratis','envio_gratis_desde','abierto','activo','rating','total_resenas','plan'];
     protected $casts=['abierto'=>'boolean','activo'=>'boolean','envio_gratis'=>'boolean','rating'=>'float','lat'=>'float','lng'=>'float'];
     protected $appends=['foto_portada_url','logo_url','menu_pdf_url'];
 

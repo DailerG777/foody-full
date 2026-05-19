@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 export default function PerfilPage() {
   const [restaurante, setRestaurante] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({ nombre:'', descripcion:'', categoria:'', telefono:'', whatsapp:'', direccion:'', pedido_minimo:'', tiempo_min:'', tiempo_max:'', envio_gratis:false, envio_gratis_desde:'' });
+  const [form, setForm] = useState({ nombre:'', descripcion:'', categoria:'', telefono:'', whatsapp:'', nequi:'', daviplata:'', direccion:'', pedido_minimo:'', tiempo_min:'', tiempo_max:'', envio_gratis:false, envio_gratis_desde:'' });
   const [portadaFile, setPortadaFile] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
   const [menuPdfFile, setMenuPdfFile] = useState(null);
@@ -26,6 +26,8 @@ export default function PerfilPage() {
         categoria: rest.categoria || '',
         telefono: rest.telefono || '',
         whatsapp: rest.whatsapp || '',
+        nequi: rest.nequi || '',
+        daviplata: rest.daviplata || '',
         direccion: rest.direccion || '',
         pedido_minimo: rest.pedido_minimo || '',
         tiempo_min: rest.tiempo_min || '',
@@ -117,6 +119,8 @@ export default function PerfilPage() {
           <div className="field full-width"><label>Descripción</label><textarea rows={3} value={form.descripcion} onChange={e=>setForm({...form,descripcion:e.target.value})} /></div>
           <div className="field"><label>Teléfono</label><input value={form.telefono} onChange={e=>setForm({...form,telefono:e.target.value})} /></div>
           <div className="field"><label>WhatsApp</label><input value={form.whatsapp} onChange={e=>setForm({...form,whatsapp:e.target.value})} /></div>
+          <div className="field"><label>Nequi</label><input value={form.nequi} onChange={e=>setForm({...form,nequi:e.target.value})} placeholder="3001234567" /></div>
+          <div className="field"><label>Daviplata</label><input value={form.daviplata} onChange={e=>setForm({...form,daviplata:e.target.value})} placeholder="3109876543" /></div>
           <div className="field full-width"><label>Dirección</label><input value={form.direccion} onChange={e=>setForm({...form,direccion:e.target.value})} /></div>
           <div className="field"><label>Pedido Mínimo ($)</label><input type="number" value={form.pedido_minimo} onChange={e=>setForm({...form,pedido_minimo:e.target.value})} /></div>
           <div className="field"><label>Tiempo Mín (min)</label><input type="number" value={form.tiempo_min} onChange={e=>setForm({...form,tiempo_min:e.target.value})} /></div>
