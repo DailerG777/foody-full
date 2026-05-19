@@ -29,6 +29,8 @@ export default function CheckoutPage() {
   const fileRef = useRef(null);
   const [step, setStep] = useState(1);
   const [direccion, setDir] = useState('');
+  const [dirLat, setDirLat] = useState(null);
+  const [dirLng, setDirLng] = useState(null);
   const [nota, setNota] = useState('');
   const [metodo, setMetodo] = useState('efectivo');
   const [cupon, setCupon] = useState('');
@@ -59,11 +61,23 @@ export default function CheckoutPage() {
     toast.success(c.label);
   };
 
+  const compartirUbicacion = () => {
+    if (!navigator.geolocation) { toast.error('Geolocalización no disponible'); return; }
+    toast('Obteniendo ubicación...');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => { setDirLat(pos.coords.latitude); setDirLng(pos.coords.longitude); toast.success('📍 Ubicación obtenida'); },
+      () => toast.error('No se pudo obtener la ubicación. Activa el GPS.'),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   const crearPedido = useMutation({
     mutationFn: async () => {
       const { data } = await pedidosAPI.crear({
         restaurante_id: cart.restaurante?.id,
         direccion_texto: direccion,
+        direccion_lat: dirLat,
+        direccion_lng: dirLng,
         items: cart.toApiPayload(),
         metodo_pago: METODO_MAP[metodo],
         nota: nota || undefined,
@@ -141,6 +155,9 @@ export default function CheckoutPage() {
           <div className="checkout-step">
             <h2 className="checkout-title">¿Dónde entregamos?</h2>
             <div className="field"><label>Dirección completa</label><input type="text" value={direccion} onChange={e=>setDir(e.target.value)} placeholder="Barrio, calle, número"/></div>
+            <button type="button" className="btn-ghost" onClick={compartirUbicacion} style={{marginBottom:'10px',fontSize:'.85rem',width:'100%',justifyContent:'center',display:'flex',alignItems:'center',gap:'6px'}}>
+              {dirLat && dirLng ? '✅ Ubicación compartida' : '📍 Compartir ubicación actual'}
+            </button>
             <div className="field"><label>Nota para el domiciliario</label><textarea value={nota} onChange={e=>setNota(e.target.value)} placeholder="Ej: portón azul..." rows={2}/></div>
             <div className="eta-card">
               <div className="eta-item"><strong>{cart.restaurante?.tiempo_min}–{cart.restaurante?.tiempo_max} min</strong><small>Tiempo estimado</small></div>

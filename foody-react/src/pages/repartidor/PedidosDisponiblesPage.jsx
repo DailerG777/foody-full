@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { repartidorAPI } from '../../api/client';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import toast from 'react-hot-toast';
 
 export default function PedidosDisponiblesPage() {
+  const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tomando, setTomando] = useState(null);
@@ -24,7 +26,7 @@ export default function PedidosDisponiblesPage() {
     try {
       await repartidorAPI.tomarPedido(id);
       toast.success('Pedido tomado!');
-      setPedidos(pedidos.filter(p => p.id !== id));
+      navigate('/repartidor/activo');
     } catch (e) {
       toast.error(e.response?.data?.message || 'No disponible');
     } finally { setTomando(null); }

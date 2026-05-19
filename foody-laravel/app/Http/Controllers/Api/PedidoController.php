@@ -16,6 +16,8 @@ class PedidoController extends Controller {
             'restaurante_id'=>['required','exists:restaurantes,id'],
             'direccion_id'=>['nullable','exists:direcciones,id'],
             'direccion_texto'=>['required_without:direccion_id','string'],
+            'direccion_lat'=>['nullable','numeric','between:-90,90'],
+            'direccion_lng'=>['nullable','numeric','between:-180,180'],
             'items'=>['required','array','min:1'],
             'items.*.producto_id'=>['required','exists:productos,id'],
             'items.*.cantidad'=>['required','integer','min:1','max:20'],
@@ -35,6 +37,8 @@ class PedidoController extends Controller {
         if (!empty($data['direccion_id'])) {
             $dir=Direccion::where('id',$data['direccion_id'])->where('user_id',$request->user()->id)->firstOrFail();
             $dirTxt=$dir->textoCompleto(); $dirLat=$dir->lat; $dirLng=$dir->lng;
+        } elseif (!empty($data['direccion_lat']) && !empty($data['direccion_lng'])) {
+            $dirLat=$data['direccion_lat']; $dirLng=$data['direccion_lng'];
         }
 
         // Calcular subtotal desde BD (nunca confiar precios del cliente)
@@ -96,11 +100,12 @@ class PedidoController extends Controller {
 
     public function updateEstado(Request $request,Pedido $pedido): JsonResponse {
         $rules=['estado'=>['required','in:aceptado,preparando,listo,en_camino,entregado,cancelado']];
-        if ($request->estado === 'entregado') {
+        $codigoRequerido = $request->estado === 'entregado' && $pedido->codigo_entrega !== null;
+        if ($codigoRequerido) {
             $rules['codigo_entrega']=['required','string','size:6'];
         }
         $data=$request->validate($rules);
-        if ($request->estado === 'entregado' && $data['codigo_entrega'] !== $pedido->codigo_entrega) {
+        if ($codigoRequerido && $data['codigo_entrega'] !== $pedido->codigo_entrega) {
             return response()->json(['message'=>'Código de entrega incorrecto.'],422);
         }
         $u=$request->user(); $nuevo=$request->estado;

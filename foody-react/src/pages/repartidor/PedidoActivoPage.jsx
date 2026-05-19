@@ -109,7 +109,7 @@ export default function PedidoActivoPage() {
         ))}
       </div>
 
-      {ESTADOS[idx + 1] === 'entregado' && (
+      {ESTADOS[idx + 1] === 'entregado' && pedido.codigo_entrega && (
         <div className="panel-card" style={{border:'2px dashed #f59e0b'}}>
           <h3 style={{color:'#f59e0b'}}>🔑 Código de entrega</h3>
           <p style={{fontSize:'.85rem',color:'#888',marginBottom:'8px'}}>Pídele al cliente el código para confirmar la entrega</p>
@@ -121,6 +121,11 @@ export default function PedidoActivoPage() {
             placeholder="Ej: 482731"
             style={{background:'#1e1e1e',border:'1px solid #333',borderRadius:'10px',padding:'12px',width:'100%',color:'#fff',textAlign:'center',fontSize:'1.4rem',letterSpacing:'8px'}}
           />
+        </div>
+      )}
+      {ESTADOS[idx + 1] === 'entregado' && !pedido.codigo_entrega && (
+        <div className="panel-card" style={{border:'2px dashed #888'}}>
+          <p style={{fontSize:'.85rem',color:'#888',textAlign:'center'}}>⚠️ Este pedido no tiene código de entrega. Puedes marcarlo como entregado sin código.</p>
         </div>
       )}
 

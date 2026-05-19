@@ -15,7 +15,9 @@ class RepartidorController extends Controller {
             ->where(function($q) use ($user) {
                 $q->whereNull('repartidor_id')->orWhere('repartidor_id',$user->id);
             })
-            ->whereIn('tipo_servicio',['comida','transporte','compra'])
+            ->where(function($q) {
+                $q->whereIn('tipo_servicio',['comida','transporte','compra'])->orWhereNull('tipo_servicio');
+            })
             ->latest()
             ->get();
         return response()->json(['pedidos'=>$pedidos]);
