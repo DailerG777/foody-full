@@ -34,7 +34,7 @@ export default function MisPedidosPage() {
               <span style={{background:`rgba(${pedido.estado==='cancelado'?'255,80,80':'64,224,208'},.12)`,color:BADGE_COLOR[pedido.estado],fontSize:'.72rem',fontWeight:700,padding:'3px 9px',borderRadius:'20px'}}>{BADGE[pedido.estado]}</span>
             </div>
             <p style={{fontSize:'.8rem',color:'#888',marginBottom:'4px'}}>#{pedido.referencia} · {new Date(pedido.created_at).toLocaleDateString('es-CO')}</p>
-            <p style={{fontSize:'.85rem',color:'#888'}}>{(pedido.items||[]).map(i=>`${i.nombre} x${i.cantidad}`).join(', ')}</p>
+            <p style={{fontSize:'.85rem',color:'#888'}}>{(pedido.items||[]).map(i=>`${i.nombre_snapshot || i.nombre} x${i.cantidad}`).join(', ')}</p>
             <div style={{display:'flex',justifyContent:'space-between',marginTop:'8px'}}>
               <span style={{fontSize:'.85rem',color:'#888'}}>{pedido.metodo_pago}</span>
               <span style={{fontWeight:800,color:'#D21E0F'}}>{fmt(pedido.total)}</span>
