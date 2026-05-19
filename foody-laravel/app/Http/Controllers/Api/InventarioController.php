@@ -10,7 +10,7 @@ class InventarioController extends Controller {
         $restaurante = $request->user()->restaurante;
         if (!$restaurante) return response()->json(['message'=>'No tienes un restaurante.'],404);
         $items = Inventario::where('restaurante_id',$restaurante->id)
-            ->with('movimientos')
+            ->with('movimientos','producto')
             ->orderBy('nombre')
             ->get();
         return response()->json($items);
@@ -26,6 +26,7 @@ class InventarioController extends Controller {
             'stock'=>['required','numeric','min:0'],
             'stock_minimo'=>['required','numeric','min:0'],
             'costo_unitario'=>['required','numeric','min:0'],
+            'producto_id'=>['nullable','exists:productos,id'],
         ]);
         $data['restaurante_id'] = $restaurante->id;
         $item = Inventario::create($data);
@@ -43,6 +44,7 @@ class InventarioController extends Controller {
             'stock'=>['sometimes','numeric','min:0'],
             'stock_minimo'=>['sometimes','numeric','min:0'],
             'costo_unitario'=>['sometimes','numeric','min:0'],
+            'producto_id'=>['nullable','exists:productos,id'],
         ]);
         $inventario->update($data);
         return response()->json($inventario);

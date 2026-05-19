@@ -63,8 +63,8 @@ class Restaurante extends Model {
 
 class Producto extends Model {
     use HasFactory;
-    protected $fillable=['restaurante_id','menu_categoria_id','nombre','descripcion','precio','foto','emoji','disponible','orden'];
-    protected $casts=['disponible'=>'boolean'];
+    protected $fillable=['restaurante_id','menu_categoria_id','nombre','descripcion','precio','costo','foto','emoji','disponible','orden'];
+    protected $casts=['disponible'=>'boolean','costo'=>'integer'];
     protected $appends=['foto_url'];
 
     public function getFotoUrlAttribute(): ?string {

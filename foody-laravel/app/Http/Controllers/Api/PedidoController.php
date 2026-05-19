@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
-use App\Models\{Cupon,Direccion,Notificacion,Pedido,PedidoItem,Producto,Restaurante};
+use App\Models\{CajaMovimiento,Cupon,Direccion,Inventario,Notificacion,Pedido,PedidoItem,Producto,Restaurante};
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -114,7 +114,19 @@ class PedidoController extends Controller {
         $updates=['estado'=>$nuevo];
         match($nuevo){'aceptado'=>$updates['aceptado_at']=now(),'listo'=>$updates['listo_at']=now(),'entregado'=>$updates['entregado_at']=now(),default=>null};
         if ($nuevo==='en_camino'&&$u->isRepartidor()) $updates['repartidor_id']=$u->id;
-        $pedido->update($updates);
+        DB::transaction(function() use ($pedido,$nuevo,$updates) {
+            $pedido->update($updates);
+            if ($nuevo==='aceptado') {
+                $pedido->load('items');
+                foreach ($pedido->items as $item) {
+                    $inv = Inventario::where('producto_id',$item->producto_id)->first();
+                    if ($inv && $inv->stock > 0) $inv->decrement('stock',$item->cantidad);
+                }
+            }
+            if ($nuevo==='entregado') {
+                CajaMovimiento::create(['restaurante_id'=>$pedido->restaurante_id,'user_id'=>$pedido->user_id,'tipo'=>'ingreso','categoria'=>'venta','concepto'=>"Venta Pedido {$pedido->referencia}",'monto'=>$pedido->total,'referencia'=>$pedido->referencia]);
+            }
+        });
         $msgs=['aceptado'=>"✅ Pedido #{$pedido->referencia} aceptado",'preparando'=>"👨‍🍳 Preparando #{$pedido->referencia}",'listo'=>"🛵 Listo para envío",'en_camino'=>"🛵 Tu repartidor va en camino",'entregado'=>"🎉 ¡Entregado! ¿Cómo estuvo?",'cancelado'=>"❌ Pedido cancelado"];
         if (isset($msgs[$nuevo])) Notificacion::create(['user_id'=>$pedido->user_id,'titulo'=>'Actualización','mensaje'=>$msgs[$nuevo],'tipo'=>'pedido','data'=>['pedido_id'=>$pedido->id]]);
         return response()->json(['message'=>'Estado actualizado.','pedido'=>$this->resource($pedido->fresh())]);

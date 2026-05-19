@@ -9,7 +9,7 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editando, setEditando] = useState(null);
-  const [form, setForm] = useState({ nombre:'', descripcion:'', precio:'', emoji:'🍽️', menu_categoria_id:'', disponible:true });
+  const [form, setForm] = useState({ nombre:'', descripcion:'', precio:'', costo:'', emoji:'🍽️', menu_categoria_id:'', disponible:true });
   const [fotoFile, setFotoFile] = useState(null);
   const [fotoPreview, setFotoPreview] = useState(null);
   const fotoRef = useRef();
@@ -37,7 +37,7 @@ export default function MenuPage() {
         toast.success('Producto creado');
       }
       setShowForm(false); setEditando(null);
-      setForm({ nombre:'', descripcion:'', precio:'', emoji:'🍽️', menu_categoria_id:'', disponible:true });
+      setForm({ nombre:'', descripcion:'', precio:'', costo:'', emoji:'🍽️', menu_categoria_id:'', disponible:true });
       setFotoFile(null); setFotoPreview(null);
       const r = await restaurantesAPI.miPanel();
       setProductos((r.data.restaurante || r.data).productos || []);
@@ -75,7 +75,7 @@ export default function MenuPage() {
         <h1>Menú</h1>
         <button className="btn-auth" onClick={() => {
           setEditando(null); setFotoFile(null); setFotoPreview(null);
-          setForm({ nombre:'', descripcion:'', precio:'', emoji:'🍽️', menu_categoria_id:categorias[0]?.id||'', disponible:true });
+          setForm({ nombre:'', descripcion:'', precio:'', costo:'', emoji:'🍽️', menu_categoria_id:categorias[0]?.id||'', disponible:true });
           setShowForm(true);
         }}>
           + Nuevo Producto
@@ -87,6 +87,7 @@ export default function MenuPage() {
           <div className="form-grid-2">
             <div className="field"><label>Nombre</label><input value={form.nombre} onChange={e=>setForm({...form,nombre:e.target.value})} required /></div>
             <div className="field"><label>Precio</label><input type="number" value={form.precio} onChange={e=>setForm({...form,precio:e.target.value})} required /></div>
+            <div className="field"><label>Costo mat.</label><input type="number" value={form.costo} onChange={e=>setForm({...form,costo:e.target.value})} placeholder="0" /></div>
             <div className="field"><label>Categoría</label>
               <select value={form.menu_categoria_id} onChange={e=>setForm({...form,menu_categoria_id:e.target.value})} required>
                 {categorias.map(c=><option key={c.id} value={c.id}>{c.nombre}</option>)}
@@ -128,6 +129,7 @@ export default function MenuPage() {
                 <div className="prod-info">
                   <span className="prod-nombre">{p.nombre}</span>
                   <span className="prod-precio">${p.precio?.toLocaleString()}</span>
+                  {p.costo > 0 && <span className="prod-costo">Costo: ${p.costo?.toLocaleString()}</span>}
                 </div>
                 <div className="prod-actions">
                   <button className={`btn-sm ${p.disponible?'btn-open':'btn-closed'}`} onClick={()=>toggleDisponible(p.id)}>

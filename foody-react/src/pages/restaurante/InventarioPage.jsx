@@ -1,23 +1,24 @@
 import { useState, useEffect } from 'react';
-import { inventarioAPI } from '../../api/client';
+import { inventarioAPI, restaurantesAPI } from '../../api/client';
 import toast from 'react-hot-toast';
 
 export default function InventarioPage() {
   const [items, setItems] = useState([]);
   const [alertas, setAlertas] = useState([]);
+  const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editando, setEditando] = useState(null);
   const [showMov, setShowMov] = useState(null);
   const [movimientos, setMovimientos] = useState([]);
-  const [form, setForm] = useState({ nombre:'', categoria:'', unidad:'unidad', stock:0, stock_minimo:0, costo_unitario:0 });
+  const [form, setForm] = useState({ nombre:'', categoria:'', unidad:'unidad', stock:0, stock_minimo:0, costo_unitario:0, producto_id:'' });
   const [movForm, setMovForm] = useState({ tipo:'entrada', cantidad:1, motivo:'' });
 
   const categorias = ['Carnes','Verduras','Lácteos','Bebidas','Despensa','Limpieza','Otro'];
 
   useEffect(() => {
-    Promise.all([inventarioAPI.listar(), inventarioAPI.alertas()])
-      .then(([r, a]) => { setItems(r.data); setAlertas(a.data); })
+    Promise.all([inventarioAPI.listar(), inventarioAPI.alertas(), restaurantesAPI.miPanel()])
+      .then(([r, a, m]) => { setItems(r.data); setAlertas(a.data); setProductos((m.data.restaurante || m.data).productos || []); })
       .catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -27,7 +28,7 @@ export default function InventarioPage() {
       if (editando) { await inventarioAPI.actualizar(editando, form); toast.success('Actualizado'); }
       else { await inventarioAPI.crear(form); toast.success('Creado'); }
       setShowForm(false); setEditando(null);
-      setForm({ nombre:'', categoria:'', unidad:'unidad', stock:0, stock_minimo:0, costo_unitario:0 });
+      setForm({ nombre:'', categoria:'', unidad:'unidad', stock:0, stock_minimo:0, costo_unitario:0, producto_id:'' });
       const r = await inventarioAPI.listar(); setItems(r.data);
     } catch (e) { toast.error(e.validationMessage || 'Error'); }
   };
@@ -62,7 +63,7 @@ export default function InventarioPage() {
     <div className="panel-layout">
       <div className="panel-header">
         <h1>Inventario</h1>
-        <button className="btn-auth" onClick={() => { setEditando(null); setForm({ nombre:'', categoria:'', unidad:'unidad', stock:0, stock_minimo:0, costo_unitario:0 }); setShowForm(true); }}>
+        <button className="btn-auth" onClick={() => { setEditando(null); setForm({ nombre:'', categoria:'', unidad:'unidad', stock:0, stock_minimo:0, costo_unitario:0, producto_id:'' }); setShowForm(true); }}>
           + Nuevo Item
         </button>
       </div>
@@ -94,6 +95,12 @@ export default function InventarioPage() {
             <div className="field"><label>Stock</label><input type="number" step="0.01" value={form.stock} onChange={e=>setForm({...form,stock:e.target.value})} required /></div>
             <div className="field"><label>Stock Mínimo</label><input type="number" step="0.01" value={form.stock_minimo} onChange={e=>setForm({...form,stock_minimo:e.target.value})} required /></div>
             <div className="field"><label>Costo Unitario</label><input type="number" step="100" value={form.costo_unitario} onChange={e=>setForm({...form,costo_unitario:e.target.value})} required /></div>
+            <div className="field"><label>Producto vinculado</label>
+              <select value={form.producto_id} onChange={e=>setForm({...form,producto_id:e.target.value})}>
+                <option value="">— Sin vínculo —</option>
+                {productos.map(p=><option key={p.id} value={p.id}>{p.nombre}</option>)}
+              </select>
+            </div>
           </div>
           <div className="form-actions"><button type="submit" className="btn-auth">{editando?'Actualizar':'Crear'}</button><button type="button" className="btn-ghost" onClick={()=>{setShowForm(false);setEditando(null);}}>Cancelar</button></div>
         </form>
@@ -101,11 +108,12 @@ export default function InventarioPage() {
 
       <div className="table-wrapper">
         <table className="panel-table">
-          <thead><tr><th>Nombre</th><th>Categoría</th><th>Unidad</th><th>Stock</th><th>Min</th><th>Costo</th><th>Estado</th><th></th></tr></thead>
+          <thead><tr><th>Nombre</th><th>Producto</th><th>Categoría</th><th>Unidad</th><th>Stock</th><th>Min</th><th>Costo</th><th>Estado</th><th></th></tr></thead>
           <tbody>
             {items.map(i => (
               <tr key={i.id} className={i.stock <= i.stock_minimo ? 'row-alerta' : ''}>
                 <td>{i.nombre}</td>
+                <td>{i.producto?.nombre ? <span className="tag">{i.producto.nombre}</span> : '—'}</td>
                 <td><span className="tag">{i.categoria}</span></td>
                 <td>{i.unidad}</td>
                 <td className={i.stock <= i.stock_minimo ? 'text-danger' : ''}>{i.stock}</td>
