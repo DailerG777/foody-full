@@ -87,6 +87,7 @@ export default function CheckoutPage() {
       return data;
     },
     onSuccess: async ({ pedido }) => {
+      setPedOk(pedido);
       if (esManual && comprobante) {
         setSubiendoComp(true);
         try {
@@ -103,12 +104,12 @@ export default function CheckoutPage() {
           const { data: pd } = await pagosAPI.iniciar({ pedido_id: pedido.id });
           const checkout = new window.WidgetCheckout({ currency:'COP', amountInCents:pd.monto_en_centavos, reference:pd.referencia, publicKey:pd.public_key, signature:{ integrity:pd.firma_integridad }, redirectUrl:pd.redirect_url });
           checkout.open((result) => {
-            cart.clear();
-            if (result.transaction?.status==='APPROVED') { toast.success('¡Pago aprobado!'); setPedOk(pedido); setStep(4); }
+            if (result.transaction?.status==='APPROVED') { toast.success('¡Pago aprobado!'); setStep(4); }
             else toast.error('Pago no completado.');
+            cart.clear();
           });
         } catch { toast.error('Error iniciando Wompi'); }
-      } else { cart.clear(); setPedOk(pedido); setStep(4); }
+      } else { cart.clear(); setStep(4); }
     },
     onError: (err) => toast.error(err.validationMessage || err.response?.data?.message || 'Error creando el pedido'),
   });

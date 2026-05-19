@@ -135,6 +135,7 @@ class PedidoController extends Controller {
             'codigo_entrega'=>$pedido->codigo_entrega,
             'metodo_pago'=>$pedido->metodo_pago,
             'direccion_texto'=>$pedido->direccion_texto,'direccion_lat'=>$pedido->direccion_lat,'direccion_lng'=>$pedido->direccion_lng,'nota'=>$pedido->nota,
+            'tipo_servicio'=>$pedido->tipo_servicio,
             'restaurante'=>$pedido->restaurante?['id'=>$pedido->restaurante->id,'nombre'=>$pedido->restaurante->nombre,'logo'=>$pedido->restaurante->logo,'lat'=>$pedido->restaurante->lat,'lng'=>$pedido->restaurante->lng]:null,
             'items'=>$pedido->items->map(fn($i)=>['nombre'=>$i->nombre_snapshot,'precio'=>$i->precio_snapshot,'cantidad'=>$i->cantidad,'subtotal'=>$i->subtotal]),
             'repartidor'=>$pedido->repartidor?->only(['id','nombre','apellido','telefono']),
