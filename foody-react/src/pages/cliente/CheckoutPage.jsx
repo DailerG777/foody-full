@@ -36,6 +36,7 @@ export default function CheckoutPage() {
   const [domicilioGratis, setDomGratis] = useState(false);
   const [cuponMsg, setCupMsg] = useState('');
   const [pedidoOk, setPedOk] = useState(null);
+  const [pagaCon, setPagaCon] = useState('');
   const [comprobante, setComprobante] = useState(null);
   const [subiendoComp, setSubiendoComp] = useState(false);
 
@@ -66,6 +67,7 @@ export default function CheckoutPage() {
         items: cart.toApiPayload(),
         metodo_pago: METODO_MAP[metodo],
         nota: nota || undefined,
+        paga_con: metodo === 'efectivo' && pagaCon ? Number(pagaCon) : undefined,
         codigo_cupon: cupon || undefined,
       });
       return data;
@@ -103,6 +105,15 @@ export default function CheckoutPage() {
       <h2>¡Pedido enviado!</h2>
       <p>{esManual ? 'Recibimos tu comprobante, pendiente de verificación.' : 'Tu pedido fue recibido por el restaurante.'}</p>
       <div className="order-id-box"><small>Número de pedido</small><strong>#{pedidoOk.referencia}</strong></div>
+      {pedidoOk.codigo_entrega && (
+        <div className="order-id-box" style={{border:'2px dashed #D21E0F',marginTop:'8px'}}>
+          <small>Código de entrega (dáselo al repartidor)</small>
+          <strong style={{fontSize:'1.8rem',letterSpacing:'6px',color:'#D21E0F'}}>{pedidoOk.codigo_entrega}</strong>
+        </div>
+      )}
+      {pedidoOk.paga_con > 0 && (
+        <p style={{color:'#888',fontSize:'.85rem',marginTop:'8px'}}>Pagas con ${pedidoOk.paga_con?.toLocaleString('es-CO')} — cambio: ${(pedidoOk.paga_con - pedidoOk.total)?.toLocaleString('es-CO')}</p>
+      )}
       <button className="btn-auth" onClick={()=>navigate(`/pedido/${pedidoOk.referencia}`)}>Ver estado del pedido</button>
       <button className="btn-ghost mt-2" onClick={()=>navigate('/')}>Volver al inicio</button>
     </div>
@@ -151,6 +162,21 @@ export default function CheckoutPage() {
                 </div>
               ))}
             </div>
+
+            {metodo === 'efectivo' && (
+              <div style={{background:'#161616',border:'1px solid #2a2a2a',borderRadius:'12px',padding:'14px',margin:'12px 0'}}>
+                <p style={{fontWeight:700,fontSize:'.85rem',marginBottom:'8px'}}>💵 ¿Con cuánto pagas?</p>
+                <div className="field">
+                  <input type="number" value={pagaCon} onChange={e=>setPagaCon(e.target.value)} placeholder="Ej: 50000" min="0" style={{background:'#1e1e1e',border:'1px solid #333',borderRadius:'10px',padding:'12px',width:'100%',color:'#fff'}} />
+                </div>
+                {Number(pagaCon) >= total && (
+                  <p style={{fontSize:'.82rem',color:'#22c55e',marginTop:'4px'}}>✅ Cambio: ${(Number(pagaCon) - total).toLocaleString('es-CO')}</p>
+                )}
+                {Number(pagaCon) > 0 && Number(pagaCon) < total && (
+                  <p style={{fontSize:'.82rem',color:'#ef4444',marginTop:'4px'}}>❌ El monto debe ser mayor o igual al total</p>
+                )}
+              </div>
+            )}
 
             {esManual && (
               <div style={{background:'#161616',border:'1px solid #2a2a2a',borderRadius:'12px',padding:'14px',margin:'12px 0'}}>
@@ -220,7 +246,7 @@ export default function CheckoutPage() {
               </div>
             )}
             <div className="confirm-total"><span>Total a pagar</span><strong>{fmt(total)}</strong></div>
-            <button className="btn-auth" disabled={crearPedido.isPending||(esManual&&!comprobante)||subiendoComp} onClick={()=>crearPedido.mutate()}>
+            <button className="btn-auth" disabled={crearPedido.isPending||(esManual&&!comprobante)||(metodo==='efectivo'&&pagaCon&&Number(pagaCon)<total)||subiendoComp} onClick={()=>crearPedido.mutate()}>
               {crearPedido.isPending||subiendoComp ? <span className="spinner"/> : '✅ Hacer pedido'}
             </button>
           </div>

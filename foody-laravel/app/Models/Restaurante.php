@@ -109,7 +109,7 @@ class Direccion extends Model {
 
 class Pedido extends Model {
     use HasFactory;
-    protected $fillable=['referencia','user_id','restaurante_id','repartidor_id','direccion_id','direccion_texto','direccion_lat','direccion_lng','nota','tipo_servicio','descripcion_servicio','contacto_nombre','contacto_telefono','subtotal','costo_domicilio','descuento','total','metodo_pago','estado','codigo_cupon','aceptado_at','listo_at','entregado_at'];
+    protected $fillable=['referencia','user_id','restaurante_id','repartidor_id','direccion_id','direccion_texto','direccion_lat','direccion_lng','nota','tipo_servicio','descripcion_servicio','contacto_nombre','contacto_telefono','subtotal','costo_domicilio','descuento','total','paga_con','codigo_entrega','metodo_pago','estado','codigo_cupon','aceptado_at','listo_at','entregado_at'];
     protected $casts=['aceptado_at'=>'datetime','listo_at'=>'datetime','entregado_at'=>'datetime'];
     protected static function booted(): void {
         static::creating(function($p){ if(empty($p->referencia)){ do{$r='F-'.strtoupper(Str::random(6));}while(static::where('referencia',$r)->exists()); $p->referencia=$r; } });

@@ -105,6 +105,14 @@ export default function PedidoDetallePage() {
 
         <div className="confirm-section"><p className="section-label">📍 Dirección</p><p>{pedido.direccion_texto}</p></div>
 
+        {pedido.codigo_entrega && !cancelado && (
+          <div className="confirm-section" style={{border:'2px dashed #D21E0F',borderRadius:'12px',padding:'12px',marginTop:'8px'}}>
+            <p className="section-label" style={{color:'#D21E0F'}}>🔑 Código de entrega</p>
+            <p style={{fontSize:'1.6rem',fontWeight:700,letterSpacing:'6px',color:'#D21E0F',textAlign:'center'}}>{pedido.codigo_entrega}</p>
+            <p style={{fontSize:'.8rem',color:'#888',textAlign:'center',marginTop:'4px'}}>Entregue este código al repartidor para confirmar la entrega</p>
+          </div>
+        )}
+
         {pedido.repartidor && (
           <div className="confirm-section">
             <p className="section-label">🛵 Tu repartidor</p>

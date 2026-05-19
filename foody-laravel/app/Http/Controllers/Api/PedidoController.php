@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class PedidoController extends Controller {
     const DOMICILIO_BASE = 3500;
@@ -19,6 +20,8 @@ class PedidoController extends Controller {
             'items.*.producto_id'=>['required','exists:productos,id'],
             'items.*.cantidad'=>['required','integer','min:1','max:20'],
             'metodo_pago'=>['required','in:efectivo,nequi,nequi_manual,daviplata,daviplata_manual,tarjeta,tarjeta_wompi'],
+            'tipo_servicio'=>['nullable','in:comida,transporte,compra'],
+            'paga_con'=>['nullable','numeric','min:0'],
             'nota'=>['nullable','string','max:300'],
             'codigo_cupon'=>['nullable','string','max:30'],
         ]);
@@ -58,11 +61,14 @@ class PedidoController extends Controller {
         $total=max(0,$subtotal+$domicilio-$descuento);
 
         $pedido=DB::transaction(function() use ($request,$restaurante,$data,$itemsData,$subtotal,$domicilio,$descuento,$total,$dirTxt,$dirLat,$dirLng,$codigoCupon) {
+            $codigoEntrega=str_pad(random_int(0,999999),6,'0',STR_PAD_LEFT);
             $p=Pedido::create(['user_id'=>$request->user()->id,'restaurante_id'=>$restaurante->id,
                 'direccion_id'=>$data['direccion_id']??null,'direccion_texto'=>$dirTxt,
                 'direccion_lat'=>$dirLat,'direccion_lng'=>$dirLng,'nota'=>$data['nota']??null,
+                'tipo_servicio'=>$data['tipo_servicio']??'comida',
                 'subtotal'=>$subtotal,'costo_domicilio'=>$domicilio,'descuento'=>$descuento,
-                'total'=>$total,'metodo_pago'=>$data['metodo_pago'],'estado'=>'pendiente','codigo_cupon'=>$codigoCupon]);
+                'total'=>$total,'paga_con'=>$data['paga_con']??null,'codigo_entrega'=>$codigoEntrega,
+                'metodo_pago'=>$data['metodo_pago'],'estado'=>'pendiente','codigo_cupon'=>$codigoCupon]);
             foreach ($itemsData as $i) PedidoItem::create(array_merge($i,['pedido_id'=>$p->id]));
             if ($codigoCupon) Cupon::where('codigo',$codigoCupon)->increment('usos_actuales');
             Notificacion::create(['user_id'=>$restaurante->user_id,'titulo'=>'🔔 Nuevo pedido',
@@ -89,7 +95,14 @@ class PedidoController extends Controller {
     }
 
     public function updateEstado(Request $request,Pedido $pedido): JsonResponse {
-        $request->validate(['estado'=>['required','in:aceptado,preparando,listo,en_camino,entregado,cancelado']]);
+        $rules=['estado'=>['required','in:aceptado,preparando,listo,en_camino,entregado,cancelado']];
+        if ($request->estado === 'entregado') {
+            $rules['codigo_entrega']=['required','string','size:6'];
+        }
+        $data=$request->validate($rules);
+        if ($request->estado === 'entregado' && $data['codigo_entrega'] !== $pedido->codigo_entrega) {
+            return response()->json(['message'=>'Código de entrega incorrecto.'],422);
+        }
         $u=$request->user(); $nuevo=$request->estado;
         if (!$this->transicionValida($pedido->estado,$nuevo,$u))
             return response()->json(['message'=>'Transición no permitida.'],422);
@@ -113,9 +126,11 @@ class PedidoController extends Controller {
     private function resource(Pedido $pedido): array {
         return ['id'=>$pedido->id,'referencia'=>$pedido->referencia,'estado'=>$pedido->estado,
             'subtotal'=>$pedido->subtotal,'costo_domicilio'=>$pedido->costo_domicilio,
-            'descuento'=>$pedido->descuento,'total'=>$pedido->total,'metodo_pago'=>$pedido->metodo_pago,
-            'direccion_texto'=>$pedido->direccion_texto,'nota'=>$pedido->nota,
-            'restaurante'=>$pedido->restaurante?['id'=>$pedido->restaurante->id,'nombre'=>$pedido->restaurante->nombre,'logo'=>$pedido->restaurante->logo]:null,
+            'descuento'=>$pedido->descuento,'total'=>$pedido->total,'paga_con'=>$pedido->paga_con,
+            'codigo_entrega'=>$pedido->codigo_entrega,
+            'metodo_pago'=>$pedido->metodo_pago,
+            'direccion_texto'=>$pedido->direccion_texto,'direccion_lat'=>$pedido->direccion_lat,'direccion_lng'=>$pedido->direccion_lng,'nota'=>$pedido->nota,
+            'restaurante'=>$pedido->restaurante?['id'=>$pedido->restaurante->id,'nombre'=>$pedido->restaurante->nombre,'logo'=>$pedido->restaurante->logo,'lat'=>$pedido->restaurante->lat,'lng'=>$pedido->restaurante->lng]:null,
             'items'=>$pedido->items->map(fn($i)=>['nombre'=>$i->nombre_snapshot,'precio'=>$i->precio_snapshot,'cantidad'=>$i->cantidad,'subtotal'=>$i->subtotal]),
             'repartidor'=>$pedido->repartidor?->only(['id','nombre','apellido','telefono']),
             'created_at'=>$pedido->created_at?->toISOString(),'entregado_at'=>$pedido->entregado_at?->toISOString()];

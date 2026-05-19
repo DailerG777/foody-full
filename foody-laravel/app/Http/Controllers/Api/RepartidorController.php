@@ -10,7 +10,7 @@ class RepartidorController extends Controller {
         $user = $request->user();
         if ($user->estado_verificacion !== 'aprobado')
             return response()->json(['message'=>'Tu cuenta está pendiente de aprobación.'],403);
-        $pedidos = Pedido::with(['restaurante:id,nombre,direccion,foto_portada','items'])
+        $pedidos = Pedido::with(['restaurante:id,nombre,direccion,foto_portada,lat,lng','items'])
             ->whereIn('estado',['listo','en_camino'])
             ->where(function($q) use ($user) {
                 $q->whereNull('repartidor_id')->orWhere('repartidor_id',$user->id);

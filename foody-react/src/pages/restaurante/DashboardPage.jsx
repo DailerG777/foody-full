@@ -25,7 +25,7 @@ export default function DashboardPage() {
   };
 
   const cambiarEstado = (pedidoId, estado) => {
-    pedidosAPI.actualizarEstado(pedidoId, estado)
+    pedidosAPI.actualizarEstado(pedidoId, { estado })
       .then(() => { toast.success(`Pedido ${estado}`); cargar(); })
       .catch(err => toast.error(err.response?.data?.message || 'Error'));
   };
